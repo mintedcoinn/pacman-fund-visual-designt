@@ -11,7 +11,7 @@ public class Red_ghost extends Actor
         setImage("RedGhost (1).png");
     }
     private static int PREVIOUS_COUNT_OF_PILLS = MyWorld.POWER_PILL_COUNT;
-    private final int[][] map = MyWorld.wrld;
+    private static int[][] map = MyWorld.wrld;
     private int fearStatusTimer = 0;
     private int speed = 20;
     private final static int CELL_SIZE = MyWorld.worldPieceSize;
