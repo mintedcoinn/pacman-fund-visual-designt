@@ -1,0 +1,11 @@
+#BlueJ class context
+comment0.target=MusicManager
+comment1.params=filename
+comment1.target=void\ play(java.lang.String)
+comment2.params=
+comment2.target=void\ stop()
+comment3.params=level
+comment3.target=void\ setVolume(float)
+comment4.params=
+comment4.target=void\ toggleMute()
+numComments=5
