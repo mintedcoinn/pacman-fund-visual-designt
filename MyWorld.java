@@ -41,9 +41,16 @@ public class MyWorld extends World {
     public static int POWER_PILL_COUNT = 8;
     private boolean gamePaused = false;
     public MyWorld() {    
-        super(980, 660, 1);
+        super(980, 700, 1);
         setBackground("background.jpg");
         buildLab();
+        
+        Label score = new Label("Score ", 25);
+        addObject(score, 35, 20);
+        //player = new Player(score);
+        //передаем score в Player, чтобы потом можно было изменять счет через
+        //score.update_score(число)
+
         spawnRed();
     }
 
@@ -67,7 +74,7 @@ public class MyWorld extends World {
         for (int y = 0; y < wrld.length; y++) {
             for (int x = 0; x < wrld[y].length; x++) {
                 if (wrld[y][x] != 0) {
-                    addObject(new Wall(wrld[y][x]), x * worldPieceSize + worldHalfPieceSize, y * worldPieceSize + worldHalfPieceSize);
+                    addObject(new Wall(wrld[y][x]), x * worldPieceSize + worldHalfPieceSize, y * worldPieceSize + worldHalfPieceSize + 40);
                 }
             }
         }
