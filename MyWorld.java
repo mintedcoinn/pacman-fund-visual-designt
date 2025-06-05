@@ -46,7 +46,7 @@ public class MyWorld extends World {
         buildLab();
         
         Label score = new Label("Score ", 25);
-        addObject(score, 35, 20);
+        addObject(score, 35, 680);
         //player = new Player(score);
         //передаем score в Player, чтобы потом можно было изменять счет через
         //score.update_score(число)
@@ -74,7 +74,7 @@ public class MyWorld extends World {
         for (int y = 0; y < wrld.length; y++) {
             for (int x = 0; x < wrld[y].length; x++) {
                 if (wrld[y][x] != 0) {
-                    addObject(new Wall(wrld[y][x]), x * worldPieceSize + worldHalfPieceSize, y * worldPieceSize + worldHalfPieceSize + 40);
+                    addObject(new Wall(wrld[y][x]), x * worldPieceSize + worldHalfPieceSize, y * worldPieceSize + worldHalfPieceSize);
                 }
             }
         }
