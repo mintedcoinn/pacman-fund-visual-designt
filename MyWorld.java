@@ -56,6 +56,8 @@ public class MyWorld extends World {
         
         Label score = new Label("Score ", 25);
         addObject(score, 35, 680);
+        Portal a = new Portal();
+        addObject(a, 35, 310);
         //player = new Player(score);
         //передаем score в Player, чтобы потом можно было изменять счет через
         //score.update_score(число)
