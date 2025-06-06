@@ -40,6 +40,15 @@ public class MyWorld extends World {
     public final static int worldHalfPieceSize = worldPieceSize /2;
     public static int POWER_PILL_COUNT = 8;
     private boolean gamePaused = false;
+        
+    public static boolean redInWorld = false;
+    private int redCoolDown = 0;
+    public static boolean yellowInWorld = false;
+    private int yellowCoolDown = 0;
+    public static boolean blueInWorld = false;
+    private int blueCoolDown = 0;
+    public static boolean pinkInWorld = false;
+    private int pinkCoolDown = 0;
     public MyWorld() {    
         super(980, 700, 1);
         setBackground("background.jpg");
@@ -52,11 +61,21 @@ public class MyWorld extends World {
         //score.update_score(число)
 
         spawnRed();
+        spawnBlue();
+        spawnYellow();
+        spawnPink();
     }
 
     public void act() {
         if (Greenfoot.isKeyDown("escape")) {
             pauseGame();
+        }
+        
+        if (!redInWorld){
+            redCoolDown += 100;
+        }
+        if (!redInWorld && redCoolDown>0){
+            spawnRed();
         }
     }
     public void pauseGame() {
@@ -79,7 +98,21 @@ public class MyWorld extends World {
             }
         }
     }
-    private void spawnRed(){
+    
+    public void spawnRed(){
         addObject(new Red_ghost(), 24*worldPieceSize + worldHalfPieceSize,13*worldPieceSize + worldHalfPieceSize);
+        redInWorld = true;
+    }
+     public void spawnBlue(){
+        addObject(new Blue_ghost(), 24*worldPieceSize + worldHalfPieceSize,13*worldPieceSize + worldHalfPieceSize);
+        redInWorld = true;
+    }
+     public void spawnYellow(){
+        addObject(new Yellow_ghost(), 24*worldPieceSize + worldHalfPieceSize,13*worldPieceSize + worldHalfPieceSize);
+        redInWorld = true;
+    }
+     public void spawnPink(){
+        addObject(new Pink_ghost(), 24*worldPieceSize + worldHalfPieceSize,13*worldPieceSize + worldHalfPieceSize);
+        redInWorld = true;
     }
 }

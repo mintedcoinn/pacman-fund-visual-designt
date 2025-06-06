@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Red_ghost extends Actor
+public class Blue_ghost extends Actor
 {
-    public Red_ghost()
+    public Blue_ghost()
     {
-        setImage("RedGhost.png");
+        setImage("BGhost.png");
     }
     private static int PREVIOUS_COUNT_OF_PILLS = MyWorld.POWER_PILL_COUNT;
     private static int[][] map = MyWorld.wrld;
@@ -216,7 +216,7 @@ public class Red_ghost extends Actor
     void somebodyCaptured(){
         if (fearStatusTimer > 0)
         {
-            MyWorld.redInWorld = false;
+            MyWorld.blueInWorld = false;
             getWorld().removeObject(this);
         }
         else
@@ -301,10 +301,10 @@ public class Red_ghost extends Actor
     }
     private void whereGhostLook(){
         switch (rotat){
-            case 0: setImage("RedGhost.png"); return;
-            case 90: setImage("RedGhostLookDown.png"); return;
-            case 180: setImage("RedGhostMirror.png"); return;
-            case 270: setImage("RedGhostLookUp.png") ; return;
+            case 0: setImage("BGhost.png"); return;
+            case 90: setImage("BGhostLookDown.png"); return;
+            case 180: setImage("BGhostMirror.png"); return;
+            case 270: setImage("BGhostLookUp.png") ; return;
         }
 
     }
