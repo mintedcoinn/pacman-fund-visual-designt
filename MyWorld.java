@@ -1,4 +1,6 @@
 import greenfoot.*;
+import java.util.List;
+import java.util.ArrayList;
 
 public class MyWorld extends World {
     public static int[][] wrld ={
@@ -40,46 +42,43 @@ public class MyWorld extends World {
     public final static int worldHalfPieceSize = worldPieceSize /2;
     public static int POWER_PILL_COUNT = 8;
     private boolean gamePaused = false;
-        
-    public static boolean redInWorld = false;
-    private int redCoolDown = 0;
-    public static boolean yellowInWorld = false;
-    private int yellowCoolDown = 0;
-    public static boolean blueInWorld = false;
-    private int blueCoolDown = 0;
-    public static boolean pinkInWorld = false;
-    private int pinkCoolDown = 0;
+    
+    private int scoreValue = 0;
+    private Label scoreLabel;
     public MyWorld() {    
         super(980, 700, 1);
         setBackground("background.jpg");
         buildLab();
         
-        Label score = new Label("Score ", 25);
-        addObject(score, 35, 680);
+        scoreLabel = new Label("Score: ", 25, scoreValue);
+        addObject(scoreLabel, 70, 680);
         Portal a = new Portal();
         addObject(a, 35, 310);
-        //player = new Player(score);
-        //передаем score в Player, чтобы потом можно было изменять счет через
-        //score.update_score(число)
 
         spawnRed();
-        spawnBlue();
-        spawnYellow();
-        spawnPink();
+        spawnPacman();
+        
+    }
+    
+    public void addScore(int points) {
+        scoreValue += points;
+        scoreLabel.update_score(points); 
     }
 
     public void act() {
         if (Greenfoot.isKeyDown("escape")) {
             pauseGame();
         }
-        
-        if (!redInWorld){
-            redCoolDown += 100;
-        }
-        if (!redInWorld && redCoolDown>0){
-            spawnRed();
+        spawnCherryTimer();
+        checkWinCondition();
+    }
+    private void checkWinCondition() {
+        if (getObjects(Coin.class).isEmpty()) {
+            showText("YOU WIN!", getWidth()/2, getHeight()/2);
+            Greenfoot.stop(); // Останавливаем игру
         }
     }
+    
     public void pauseGame() {
         if (!gamePaused) {
             gamePaused = true;
@@ -97,24 +96,79 @@ public class MyWorld extends World {
                 if (wrld[y][x] != 0) {
                     addObject(new Wall(wrld[y][x]), x * worldPieceSize + worldHalfPieceSize, y * worldPieceSize + worldHalfPieceSize);
                 }
+                if ((wrld[y][x]>0 && wrld[y][x]<16 && x<20 || 
+                    wrld[y][x]>0 && wrld[y][x]<16 && x>30 ||
+                    wrld[y][x]>0 && wrld[y][x]<16 && y<12 ||
+                    wrld[y][x]>0 && wrld[y][x]<16 && y>20) &&
+        
+                    (wrld[y][x]>0 && wrld[y][x]<16 && x>5 ||
+                    wrld[y][x]>0 && wrld[y][x]<16 && y<12 ||
+                    wrld[y][x]>0 && wrld[y][x]<16 && y>16 )&&
+                    
+                    (wrld[y][x]>0 && wrld[y][x]<16 && x<43 ||
+                    wrld[y][x]>0 && wrld[y][x]<16 && y<12 ||
+                    wrld[y][x]>0 && wrld[y][x]<16 && y>16 )){
+                    addObject(new Coin(),x * worldPieceSize + worldHalfPieceSize, y * worldPieceSize + worldHalfPieceSize);
+                }
             }
         }
     }
-    
-    public void spawnRed(){
+    private void spawnRed(){
         addObject(new Red_ghost(), 24*worldPieceSize + worldHalfPieceSize,13*worldPieceSize + worldHalfPieceSize);
-        redInWorld = true;
     }
-     public void spawnBlue(){
-        addObject(new Blue_ghost(), 24*worldPieceSize + worldHalfPieceSize,13*worldPieceSize + worldHalfPieceSize);
-        redInWorld = true;
+    private void spawnPacman(){
+        addObject(new Pacman(), 2*worldPieceSize + worldHalfPieceSize,2*worldPieceSize + worldHalfPieceSize);
     }
-     public void spawnYellow(){
-        addObject(new Yellow_ghost(), 24*worldPieceSize + worldHalfPieceSize,13*worldPieceSize + worldHalfPieceSize);
-        redInWorld = true;
+    
+    private static class Point {
+        int x, y;   
+        Point(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
     }
-     public void spawnPink(){
-        addObject(new Pink_ghost(), 24*worldPieceSize + worldHalfPieceSize,13*worldPieceSize + worldHalfPieceSize);
-        redInWorld = true;
+    
+    private int cherrySpawnTimer = 0;
+    private int cherrySpawnCooldown = Greenfoot.getRandomNumber(1000) + 1000; 
+    private void spawnCherryTimer() {
+        cherrySpawnTimer++;
+        if (cherrySpawnTimer >= cherrySpawnCooldown) {
+            spawnCherry(); 
+            cherrySpawnTimer = 0;
+            cherrySpawnCooldown = Greenfoot.getRandomNumber(1000) + 1000; 
+        }
+    }
+    private void spawnCherry() {
+        List<Point> preferredLocations = new ArrayList<>();
+
+        for (int y = 0; y < wrld.length; y++) {
+            for (int x = 0; x < wrld[y].length; x++) {
+                if (wrld[y][x] > 0 && wrld[y][x] < 16) {
+    
+                    // Исключаем запрещённые зоны
+                    if (
+                        (x < 20 || x > 30 || y < 12 || y > 20) &&
+                        (x > 2 || y < 12 || y > 16) &&
+                        (x < 43 || y < 12 || y > 16)
+                    ) {
+                        int centerX = x * worldPieceSize + worldHalfPieceSize;
+                        int centerY = y * worldPieceSize + worldHalfPieceSize;
+    
+                        boolean hasCoin = !getObjectsAt(centerX, centerY, Coin.class).isEmpty();
+    
+                        if (!hasCoin) {
+                            preferredLocations.add(new Point(x, y));
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!preferredLocations.isEmpty()) {
+            Point chosenLoc = preferredLocations.get(Greenfoot.getRandomNumber(preferredLocations.size()));
+            int spawnX = chosenLoc.x * worldPieceSize + worldHalfPieceSize;
+            int spawnY = chosenLoc.y * worldPieceSize + worldHalfPieceSize;
+            addObject(new Cherry(), spawnX, spawnY);
+        }
     }
 }

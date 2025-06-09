@@ -4,9 +4,11 @@ public class Label extends Actor {
     private String text;
     private int size;
     private int value = 0;
-    public Label(String txt, int sz) {
+    public Label(String txt, int sz, int val) {
         text = txt;
         size = sz;
+        value = val;
+        
     }
     
     public void act() {
