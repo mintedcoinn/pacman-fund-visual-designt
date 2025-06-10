@@ -46,124 +46,53 @@ public class Red_ghost extends Actor
         
         if (fearStatusTimer >0 ){
             fearStatusTimer -= 1;
-            FearMod(_allowed_dir);
+            FearMod();
             return;
         }
         
         if (pacmanWasHereFlag){
-            ChaseMod(_allowed_dir);
+            ChaseMod();
             return;
         }
         
         if (isPacmanFound()){
-            ChaseMod(_allowed_dir);
+            ChaseMod();
             return;
         }
         
-        ScatterMod(_allowed_dir);
+        ScatterMod();
     }
     
-    private void ScatterMod(int allowed_dirs)//straight pattern. ghost will just walk. if it can turn on any side or just go straight,
-    //ghost will go straight with bigger chance
-    {       // if it can't go straight, ghost will chose direction with random from allowed
-        int newX = getX();
-        int newY = getY();
-        allowed_dirs -= where_from_came;
-        
-        if (!canChangeDirection){ 
-            switch (rotat) {
-            case 0:   newX += speed; break;
-            case 90:  newY += speed; break;
-            case 180: newX -= speed; break;
-            case 270: newY -= speed; break;
-        }
-        
-        whereGhostLook();
-        
-        setLocation(newX, newY);
-        return;
-        }
-        
-        List<Integer> _allowed_direction = new ArrayList<>();
-            switch (allowed_dirs){
-                case 15:_allowed_direction = Arrays.asList(0, 90, 180, 270);break;
-                case 14:_allowed_direction = Arrays.asList(90, 180, 270);break;
-                case 13:_allowed_direction = Arrays.asList(0, 180, 270);break;
-                case 12:_allowed_direction = Arrays.asList(180, 270);break;
-                case 11:_allowed_direction = Arrays.asList(0, 90, 270);break;
-                case 10:_allowed_direction = Arrays.asList(90, 270);break;
-                case 9:_allowed_direction = Arrays.asList(0, 270);break;
-                case 8:_allowed_direction = Arrays.asList(270);break;
-                case 7:_allowed_direction = Arrays.asList(0, 90, 180);break;
-                case 6:_allowed_direction = Arrays.asList(90, 180);break;
-                case 5:_allowed_direction = Arrays.asList(0, 180);break;
-                case 4:_allowed_direction = Arrays.asList( 180);break;
-                case 3:_allowed_direction = Arrays.asList(0, 90);break;
-                case 2:_allowed_direction = Arrays.asList(90);break;
-                case 1:_allowed_direction = Arrays.asList(0);break;
-            }
-            
-        if (!_allowed_direction.contains(rotat)){
-            int randIndex =  Greenfoot.getRandomNumber(_allowed_direction.size());
-            rotat = _allowed_direction.get(randIndex);
-            
-        }
-        else{
-            List<Integer> _prefer_straight_but = new ArrayList<>();
-            for (int g =0; g< _allowed_direction.size();g++){
-                _prefer_straight_but.add(_allowed_direction.get(g));
-            }
-            _prefer_straight_but.add(rotat);
-            _prefer_straight_but.add(rotat);
-            int randIndex =  Greenfoot.getRandomNumber(_allowed_direction.size());
-            rotat = _allowed_direction.get(randIndex);
-            
-            
-        }
-
-        switch (rotat) {
-            case 0:   newX += speed; break;
-            case 90:  newY += speed; break;
-            case 180: newX -= speed; break;
-            case 270: newY -= speed; break;
-        }
-        
-        whereGhostLook();
-        canChangeDirection = false;
-        setLocation(newX, newY);
+    private void ScatterMod()
+    {       
+        ChangerLocation(0,_allowed_dir);
     }
-    private void ChaseMod(int allowed_dirs)//hunt pattern. if pacman detected => go to him
+    private void ChaseMod()
     {
+        
+    }
+    private void FearMod()
+    {
+        
+    }
+    
+    void ChangerLocation(int direction_pattern, int allowed_dirs){ //direction_pattern : -1 - chaotic, 0 - straight, 1 - hunt
         int newX = getX();
         int newY = getY();
         allowed_dirs -= where_from_came;
-        
-        int pX = pacmanCoords()/100;
-        int pY = pacmanCoords()%100;
-        if (pX == matrixX){
+        if (direction_pattern == 1){//hunt pattern. if pacman detected => go to him
+            int pX = pacmanCoords()/100;
+            int pY = pacmanCoords()%100;
+            if (pX == matrixX){
                 if (matrixY < pY) rotat = 90;
                 else rotat = 270;
-        }
-        if (pY == matrixY){
+            }
+            if (pY == matrixY){
                 if (matrixX < pX) rotat = 0;
                 else rotat = 180;
-        }
-        switch (rotat) {
-            case 0:   newX += speed; break;
-            case 90:  newY += speed; break;
-            case 180: newX -= speed; break;
-            case 270: newY -= speed; break;
+            }
         }
         
-        whereGhostLook();
-        canChangeDirection = false;
-        setLocation(newX, newY);
-    }
-    private void FearMod(int allowed_dirs) //chaotic pattern. ghost will go to random direction
-    {
-        int newX = getX();
-        int newY = getY();
-        allowed_dirs -= where_from_came;
         
         if (!canChangeDirection){ 
             switch (rotat) {
@@ -173,13 +102,15 @@ public class Red_ghost extends Actor
             case 270: newY -= speed; break;
         }
         
-        whereGhostLook();
+        if (rotat ==180) setImage("RedGhostMirror.png");
+        if (rotat ==0) setImage("RedGhost.png");
         setLocation(newX, newY);
         return;
         }
-        
-        List<Integer> random_allowed_dir = new ArrayList<>();
-        switch (allowed_dirs){
+        //if there is a fork ghost will choose direction with his actual pattern
+        if (direction_pattern == -1){ //chaotic pattern. ghost will go to random direction
+            List<Integer> random_allowed_dir = new ArrayList<>();
+            switch (allowed_dirs){
             case 15:random_allowed_dir = Arrays.asList(0, 90, 180, 270);break;
             case 14:random_allowed_dir = Arrays.asList(90, 180, 270);break;
             case 13:random_allowed_dir = Arrays.asList(0, 180, 270);break;
@@ -195,11 +126,50 @@ public class Red_ghost extends Actor
             case 3:random_allowed_dir = Arrays.asList(0, 90);break;
             case 2:random_allowed_dir = Arrays.asList(90);break;
             case 1:random_allowed_dir = Arrays.asList(0);break;
-        }
+            }
             
         int randIndex =  Greenfoot.getRandomNumber(random_allowed_dir.size());
         rotat = random_allowed_dir.get(randIndex);
         
+        }
+        
+        if (direction_pattern == 0){ //straight pattern. ghost will just walk. if it can turn on any side or just go straight, ghost will go straight with bigger chance
+            List<Integer> _allowed_direction = new ArrayList<>();// if it can't go straight, ghost will chose direction with random from allowed
+            switch (allowed_dirs){
+            case 15:_allowed_direction = Arrays.asList(0, 90, 180, 270);break;
+            case 14:_allowed_direction = Arrays.asList(90, 180, 270);break;
+            case 13:_allowed_direction = Arrays.asList(0, 180, 270);break;
+            case 12:_allowed_direction = Arrays.asList(180, 270);break;
+            case 11:_allowed_direction = Arrays.asList(0, 90, 270);break;
+            case 10:_allowed_direction = Arrays.asList(90, 270);break;
+            case 9:_allowed_direction = Arrays.asList(0, 270);break;
+            case 8:_allowed_direction = Arrays.asList(270);break;
+            case 7:_allowed_direction = Arrays.asList(0, 90, 180);break;
+            case 6:_allowed_direction = Arrays.asList(90, 180);break;
+            case 5:_allowed_direction = Arrays.asList(0, 180);break;
+            case 4:_allowed_direction = Arrays.asList( 180);break;
+            case 3:_allowed_direction = Arrays.asList(0, 90);break;
+            case 2:_allowed_direction = Arrays.asList(90);break;
+            case 1:_allowed_direction = Arrays.asList(0);break;
+            }
+            if (!_allowed_direction.contains(rotat)){
+            int randIndex =  Greenfoot.getRandomNumber(_allowed_direction.size());
+            rotat = _allowed_direction.get(randIndex);
+            
+            }
+            else{
+            List<Integer> _prefer_straight_but = new ArrayList<>();
+            for (int g =0; g< _allowed_direction.size();g++){
+                _prefer_straight_but.add(_allowed_direction.get(g));
+            }
+            _prefer_straight_but.add(rotat);
+            _prefer_straight_but.add(rotat);
+            int randIndex =  Greenfoot.getRandomNumber(_allowed_direction.size());
+            rotat = _allowed_direction.get(randIndex);
+            
+            }
+            }
+
         switch (rotat) {
             case 0:   newX += speed; break;
             case 90:  newY += speed; break;
@@ -207,23 +177,14 @@ public class Red_ghost extends Actor
             case 270: newY -= speed; break;
         }
         
-        whereGhostLook();
+        if (rotat ==180) setImage("RedGhostMirror.png");
+        if (rotat ==0) setImage("RedGhost.png");
         canChangeDirection = false;
         setLocation(newX, newY);
         
     }
     
-    void somebodyCaptured(){
-        if (fearStatusTimer > 0)
-        {
-            MyWorld.redInWorld = false;
-            getWorld().removeObject(this);
-        }
-        else
-        {
-            
-        }
-    }
+    void somebodyCaptured(){}
     
     boolean isPacmanFound(){// if pacman is on same line as ghost, ghost will check visibility on pacman. if there are no walls, ghost will chase pacman
         int pX = pacmanCoords()/100;
@@ -231,7 +192,7 @@ public class Red_ghost extends Actor
         int lineP = -1;
         int lineG = -1;
         if (pX==matrixX && pY==matrixY){
-            somebodyCaptured();
+            ////
             return false;
         }
         if(pX==matrixX) {
@@ -291,7 +252,8 @@ public class Red_ghost extends Actor
     
     private void inCenterOfCell(){ //if ghost in center of cell it can change direction 
         if (JoinNewCell){
-            if (getX() == matrixX*CELL_SIZE+CELL_HALF && getY() == matrixY*CELL_SIZE+CELL_HALF) canChangeDirection = true;
+            if (getX() == matrixX*CELL_SIZE+CELL_HALF && getY() == matrixY*CELL_SIZE+CELL_HALF) 
+            canChangeDirection = true;
         }
     }
     private void matrixNavigation(int current_x, int current_y) {
@@ -299,16 +261,7 @@ public class Red_ghost extends Actor
         matrixY = current_y / CELL_SIZE;
         _allowed_dir = map[matrixY][matrixX];
     }
-    private void whereGhostLook(){
-        switch (rotat){
-            case 0: setImage("RedGhost.png"); return;
-            case 90: setImage("RedGhostLookDown.png"); return;
-            case 180: setImage("RedGhostMirror.png"); return;
-            case 270: setImage("RedGhostLookUp.png") ; return;
-        }
-
-    }
-    private void circlenavigation(){
+  private void circlenavigation(){
         if (matrixX==0) {
             int dy = getY();
             for(int i = 18; i !=0; i-=2)setLocation(i,dy);
@@ -330,6 +283,7 @@ public class Red_ghost extends Actor
             prevMY = matrixY;
             JoinNewCell = true;
         }
+    }
     }
     private int pacmanCoords(){
         int PACMAN_MATRIX_X = 0;
