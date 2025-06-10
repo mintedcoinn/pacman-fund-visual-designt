@@ -19,9 +19,9 @@ public class Pink_ghost extends Actor
     private int speed = 2;
     
     public int matrixX = 24;
-    public int matrixY = 13;
+    public int matrixY = 17;
     private int prevMX = 24;
-    private int prevMY = 13;
+    private int prevMY = 17;
     private int _allowed_dir = 10;
     private int where_from_came = 2;
     private int prev_rotat = 0;

@@ -18,8 +18,8 @@ public class Pacman extends Actor {
     
     private int speed = 2;
     
-    public int matrixX = 24;
-    public int matrixY = 13;
+    public static int matrixX = 24;
+    public static int matrixY = 13;
     private int prevMX = 24;
     private int prevMY = 13;
     private int _allowed_dir = 10;
@@ -29,7 +29,7 @@ public class Pacman extends Actor {
     
     private int rotat = 270;
     private boolean canChangeDirection = false;
-    private boolean JoinNewCell = false;
+    public static boolean JoinNewCell = false;
     private boolean can = false;
     
     public void act()
@@ -41,16 +41,8 @@ public class Pacman extends Actor {
         
         ChangerLocation(_allowed_dir);
         eatCoin();
-        checkGhostCollision();
     }
     
-    private void checkGhostCollision() {
-        if (isTouching(Red_ghost.class)) {
-            World world = getWorld();
-            world.showText("THE END", world.getWidth()/2, world.getHeight()/2);
-            Greenfoot.stop(); // Останавливаем игру
-        }
-    }
         
     void ChangerLocation( int allowed_dirs){ 
         int newX = getX();
@@ -192,18 +184,18 @@ public class Pacman extends Actor {
         matrixY = current_y / CELL_SIZE;
         _allowed_dir = map[matrixY][matrixX];
     }
-    private void circlenavigation(){
+        private void circlenavigation(){
         if (matrixX==0) {
             int dy = getY();
             for(int i = 18; i !=0; i-=2)setLocation(i,dy);
-            for(int i = 978; i != 950; i-=2)setLocation(i,dy);
+            for(int i = 980; i != 950; i-=2)setLocation(i,dy);
             matrixNavigation(getX(),getY());
             where_from_came = 1;
             prevMX = matrixX+1;
             prevMY = matrixY;
             JoinNewCell = true;
         }
-        if (matrixX== map[0].length) {
+        if (matrixX== map[0].length-1) {
             int dy = getY();
             for(int i = 960; i !=978; i+=2)setLocation(i,dy);
             for(int i = 0; i != 30; i+=2)setLocation(i,dy);

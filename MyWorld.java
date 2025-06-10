@@ -40,10 +40,12 @@ public class MyWorld extends World {
     };
     public final static int worldPieceSize = 20;
     public final static int worldHalfPieceSize = worldPieceSize /2;
-    public static int POWER_PILL_COUNT = 8;
+    public static int POWER_PILL_COUNT = 5;
     private boolean gamePaused = false;
+    public static int CHASE_TIMER = 0;
+    private int CHASE_TIMER_CD = 450;
     
-     public static boolean redInWorld = false;
+    public static boolean redInWorld = false;
     private int redCoolDown = 0;
     public static boolean yellowInWorld = false;
     private int yellowCoolDown = 0;
@@ -54,8 +56,6 @@ public class MyWorld extends World {
 
     private int scoreValue = 0;
     private Label scoreLabel;
-
-    private boolean gamePaused = false;
     private int cherrySpawnTimer = 0;
     private int cherrySpawnCooldown = Greenfoot.getRandomNumber(1000) + 1000;
 
@@ -70,6 +70,9 @@ public class MyWorld extends World {
         addObject(a, 35, 310);
 
         spawnRed();
+        spawnBlue();
+        spawnYellow();
+        spawnPink();
         spawnPacman();
     }
 
@@ -83,6 +86,17 @@ public class MyWorld extends World {
         if (!redInWorld && redCoolDown > 0) {
             spawnRed();
         }
+        if (CHASE_TIMER_CD == 0){
+            CHASE_TIMER = 450;
+        }
+        if (CHASE_TIMER >0){
+            CHASE_TIMER -=1;
+            CHASE_TIMER_CD +=2;
+        }
+        if (CHASE_TIMER == 0){
+            CHASE_TIMER_CD -= 1;
+        }
+        
         spawnCherryTimer();
         checkWinCondition();
     }
@@ -146,7 +160,7 @@ public class MyWorld extends World {
     }
 
     public void spawnPink() {
-        addObject(new Pink_ghost(), 24 * worldPieceSize + worldHalfPieceSize, 13 * worldPieceSize + worldHalfPieceSize);
+        addObject(new Pink_ghost(), 24 * worldPieceSize + worldHalfPieceSize, 17 * worldPieceSize + worldHalfPieceSize);
         pinkInWorld = true;
         pinkCoolDown = 0;
     }
@@ -194,6 +208,14 @@ public class MyWorld extends World {
             int spawnX = chosenLoc.x * worldPieceSize + worldHalfPieceSize;
             int spawnY = chosenLoc.y * worldPieceSize + worldHalfPieceSize;
             addObject(new Cherry(), spawnX, spawnY);
+        }
+    }
+    
+     private static class Point {
+        int x, y;   
+        Point(int x, int y) {
+            this.x = x;
+            this.y = y;
         }
     }
 }
