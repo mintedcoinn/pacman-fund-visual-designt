@@ -59,6 +59,8 @@ public class MyWorld extends World {
     private int cherrySpawnTimer = 0;
     private int cherrySpawnCooldown = Greenfoot.getRandomNumber(1000) + 1000;
 
+    Actor imageActor = new Actor() {};
+
     public MyWorld() {
         super(980, 700, 1);
         setBackground("background.jpg");
@@ -68,6 +70,11 @@ public class MyWorld extends World {
         addObject(scoreLabel, 70, 680);
         Portal a = new Portal();
         addObject(a, 35, 310);
+
+        GreenfootImage Image = new GreenfootImage("door.png");
+        Image.scale(60, 10);  
+        imageActor.setImage(Image);
+        addObject(imageActor, 490, 270);
 
         spawnRed();
         spawnBlue();
