@@ -19,6 +19,7 @@ public class Red_ghost extends Actor
     private final static int CELL_HALF = MyWorld.worldHalfPieceSize;
     
     private int fearStatusTimer = 0;
+    private boolean goHomeFlag = false;
     private int speed = 2;
     
     private int[] dirs = {1, 2, 4, 8};
@@ -44,6 +45,11 @@ public class Red_ghost extends Actor
         changeMatrixLocatioLog();
         inCenterOfCell();
         
+        if (goHomeFlag){ 
+            GoHomeMod();
+            return;
+        }
+        
         if (MyWorld.POWER_PILL_COUNT < PREVIOUS_COUNT_OF_PILLS){
             fearStatusTimer += 70* PREVIOUS_COUNT_OF_PILLS;
             PREVIOUS_COUNT_OF_PILLS = MyWorld.POWER_PILL_COUNT;
@@ -51,12 +57,13 @@ public class Red_ghost extends Actor
         
         if (fearStatusTimer >0 ){
             fearStatusTimer -= 1;
+            setImage("FGhost.png");
             FearMod(_allowed_dir);
             return;
         }
         
         if (MyWorld.CHASE_TIMER != 0){
-            ChaseMod(_allowed_dir);
+            ChaseMod();
         }
         
         ScatterMod(_allowed_dir);
@@ -114,16 +121,13 @@ public class Red_ghost extends Actor
         canChangeDirection = false;
         setLocation(newX, newY);
     }
-    private void ChaseMod(int allowed_dirs)//hunt pattern red one will chase pacman's coord
+    private void ChaseMod()//hunt pattern red one will chase pacman's coord
     {
         int newX = getX();
         int newY = getY();
-        allowed_dirs -= where_from_came;
-        
-       // if (Pacman.JoinNewCell){    
+       
         path = pathToTarget(pacmanCoords());
         current_path_step = 0;
-        //}
         
         if (!canChangeDirection){ 
             switch (rotat) {
@@ -132,8 +136,6 @@ public class Red_ghost extends Actor
             case 180: newX -= speed; break;
             case 270: newY -= speed; break;
         }
-        path = pathToTarget(pacmanCoords());
-        current_path_step = 0;
         return;
         }
         
@@ -165,8 +167,7 @@ public class Red_ghost extends Actor
             case 180: newX -= speed; break;
             case 270: newY -= speed; break;
         }
-        
-        whereGhostLook();
+    
         setLocation(newX, newY);
         return;
         }
@@ -186,17 +187,74 @@ public class Red_ghost extends Actor
             case 270: newY -= speed; break;
         }
         
-        whereGhostLook();
         canChangeDirection = false;
         setLocation(newX, newY);
         
     }
     
-    void somebodyCaptured(){}
+    private void GoHomeMod(){
+        int newX = getX();
+        int newY = getY();
+       
+        path = pathToTarget(2413);
+        current_path_step = 0;
+        if (path == null){
+            goHomeFlag = false;
+            return;
+        }
+        
+        if (!canChangeDirection){ 
+            switch (rotat) {
+            case 0:   newX += speed; break;
+            case 90:  newY += speed; break;
+            case 180: newX -= speed; break;
+            case 270: newY -= speed; break;
+        }
+        switch (rotat){
+            case 0: setImage("Eyes.png"); break;
+            case 90: setImage("EyesLookDown.png"); break;
+            case 180: setImage("EyesMirror.png"); break;
+            case 270: setImage("EyesLookUp.png") ; break;
+        }
+    
+        canChangeDirection = false;
+        setLocation(newX, newY);
+        return;
+        }
+        
+        if (matrixX < path.get(current_path_step+1)/100) rotat = 0;
+        if (matrixX > path.get(current_path_step+1)/100) rotat = 180;
+        if (matrixY < path.get(current_path_step+1)%100) rotat = 90;
+        if (matrixY > path.get(current_path_step+1)%100) rotat = 270;
+        switch (rotat) {
+            case 0:   newX += speed; break;
+            case 90:  newY += speed; break;
+            case 180: newX -= speed; break;
+            case 270: newY -= speed; break;
+        }
+        
+        switch (rotat){
+            case 0: setImage("Eyes.png"); break;
+            case 90: setImage("EyesLookDown.png"); break;
+            case 180: setImage("EyesMirror.png"); break;
+            case 270: setImage("EyesLookUp.png") ; break;
+        }
+        canChangeDirection = false;
+        setLocation(newX, newY);
+    }
+    void somebodyCaptured(){
+        if (fearStatusTimer >0){
+            MyWorld.scoreValue += 200;
+            goHomeFlag = true;
+            fearStatusTimer = 0;
+        }
+    }
     
     private List<Integer> pathToTarget(int target) {
         int start = matrixX * 100 + matrixY;
-        if (start == target) return null;
+        if (start == target) {
+            return null; 
+        }
     
         int rows = map.length;
         int cols = map[0].length;
@@ -243,7 +301,7 @@ public class Red_ghost extends Actor
         return null;
     }
     
-     private void whereGhostLook(){
+    private void whereGhostLook(){
         switch (rotat){
             case 0: setImage("RedGhost.png"); return;
             case 90: setImage("RedGhostLookDown.png"); return;
@@ -270,12 +328,16 @@ public class Red_ghost extends Actor
             canChangeDirection = true;
         }
     }
+    
     private void matrixNavigation(int current_x, int current_y) {
         matrixX = current_x / CELL_SIZE;
         matrixY = current_y / CELL_SIZE;
         _allowed_dir = map[matrixY][matrixX];
+        if (matrixX*100+matrixY == pacmanCoords() && goHomeFlag == false){
+            somebodyCaptured();
+        }
     }
-  private void circlenavigation(){
+    private void circlenavigation(){
         if (matrixX==0) {
             int dy = getY();
             for(int i = 18; i !=0; i-=2)setLocation(i,dy);

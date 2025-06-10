@@ -19,9 +19,9 @@ public class Pacman extends Actor {
     private int speed = 2;
     
     public static int matrixX = 24;
-    public static int matrixY = 13;
+    public static int matrixY = 29;
     private int prevMX = 24;
-    private int prevMY = 13;
+    private int prevMY = 29;
     private int _allowed_dir = 10;
     private int where_from_came = 2;
     private int prev_rotat = 0;

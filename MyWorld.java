@@ -54,7 +54,7 @@ public class MyWorld extends World {
     public static boolean pinkInWorld = false;
     private int pinkCoolDown = 0;
 
-    private int scoreValue = 0;
+    public static int scoreValue = 0;
     private Label scoreLabel;
     private int cherrySpawnTimer = 0;
     private int cherrySpawnCooldown = Greenfoot.getRandomNumber(1000) + 1000;
@@ -166,7 +166,7 @@ public class MyWorld extends World {
     }
 
     public void spawnPacman() {
-        addObject(new Pacman(), 2 * worldPieceSize + worldHalfPieceSize, 2 * worldPieceSize + worldHalfPieceSize);
+        addObject(new Pacman(), 24 * worldPieceSize + worldHalfPieceSize, 29 * worldPieceSize + worldHalfPieceSize);
     }
 
     public void addScore(int points) {
