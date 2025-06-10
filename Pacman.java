@@ -27,7 +27,7 @@ public class Pacman extends Actor {
     private int prev_rotat = 0;
     private int dir;
     
-    private int rotat = 270;
+    public static int rotat = 270;
     private boolean canChangeDirection = false;
     public static boolean JoinNewCell = false;
     private boolean can = false;

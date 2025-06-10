@@ -20,7 +20,7 @@ public class Red_ghost extends Actor
     
     private int fearStatusTimer = 0;
     private boolean goHomeFlag = false;
-    private int speed = 2;
+    private int speed = 1;
     
     private int[] dirs = {1, 2, 4, 8};
     public int matrixX = 24;
@@ -29,10 +29,8 @@ public class Red_ghost extends Actor
     private int prevMY = 13;
     private int _allowed_dir = 10;
     private int where_from_came = 2;
-    private int prev_rotat = 0;
     private int current_path_step = 0;
     private List<Integer> path = new ArrayList();
-    
     
     private int rotat = 270;
     private boolean canChangeDirection = false;
@@ -242,6 +240,7 @@ public class Red_ghost extends Actor
         canChangeDirection = false;
         setLocation(newX, newY);
     }
+    
     void somebodyCaptured(){
         if (fearStatusTimer >0){
             MyWorld.scoreValue += 200;
@@ -333,6 +332,7 @@ public class Red_ghost extends Actor
         matrixX = current_x / CELL_SIZE;
         matrixY = current_y / CELL_SIZE;
         _allowed_dir = map[matrixY][matrixX];
+        doNotGoHome();
         if (matrixX*100+matrixY == pacmanCoords() && goHomeFlag == false){
             somebodyCaptured();
         }
@@ -366,5 +366,9 @@ public class Red_ghost extends Actor
         int PACMAN_MATRIX_Y = Pacman.matrixY;
         return PACMAN_MATRIX_X * 100 + PACMAN_MATRIX_Y;
     }
-    
+    private void doNotGoHome(){
+        if (matrixX *100 + matrixY == 2411 && where_from_came != 2){
+            _allowed_dir -= 2;
+        }
+    }
 }
