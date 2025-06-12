@@ -4,6 +4,7 @@ public class Label extends Actor {
     private String text;
     private int size;
     private int value = 0;
+    private boolean valll =false;
     public Label(String txt, int sz, int val) {
         text = txt;
         size = sz;
@@ -18,4 +19,6 @@ public class Label extends Actor {
     public void update_score(int n) {
         value += n;
     }
+    
+
 }

@@ -41,6 +41,7 @@ public class MyWorld extends World {
     public final static int worldPieceSize = 20;
     public final static int worldHalfPieceSize = worldPieceSize /2;
     public static int POWER_PILL_COUNT = 5;
+    public static boolean currentPillEffect;
     private boolean gamePaused = false;
     public static int CHASE_TIMER = 0;
     private int CHASE_TIMER_CD = 450;
@@ -64,7 +65,9 @@ public class MyWorld extends World {
     public MyWorld() {
         super(980, 700, 1);
         setBackground("background.jpg");
+        
         buildLab();
+        spawnPill();
 
         scoreLabel = new Label("Score: ", 25, scoreValue);
         addObject(scoreLabel, 70, 680);
@@ -82,6 +85,8 @@ public class MyWorld extends World {
         spawnPink();
         spawnPacman();
     }
+    
+   
 
     public void act() {
         if (Greenfoot.isKeyDown("escape")) {
@@ -125,14 +130,30 @@ public class MyWorld extends World {
     public void resumeGame() {
         gamePaused = false;
     }
+    
+    private void spawnPill(){
+        addObject(new Pill(), 2 * worldPieceSize + worldHalfPieceSize, 2 * worldPieceSize + worldHalfPieceSize);
+        addObject(new Pill(), 46 * worldPieceSize + worldHalfPieceSize, 2 * worldPieceSize + worldHalfPieceSize);
+        addObject(new Pill(), 2 * worldPieceSize + worldHalfPieceSize, 30 * worldPieceSize + worldHalfPieceSize);
+        addObject(new Pill(), 46 * worldPieceSize + worldHalfPieceSize, 30 * worldPieceSize + worldHalfPieceSize);
+        addObject(new Pill(), 24 * worldPieceSize + worldHalfPieceSize, 11 * worldPieceSize + worldHalfPieceSize);
 
+    }
     private void buildLab() {
+        
         for (int y = 0; y < wrld.length; y++) {
             for (int x = 0; x < wrld[y].length; x++) {
                 if (wrld[y][x] != 0) {
-                    addObject(new Wall(wrld[y][x]), x * worldPieceSize + worldHalfPieceSize, y * worldPieceSize + worldHalfPieceSize);
+                    addObject(new Wall(wrld[y][x]), x * worldPieceSize + worldHalfPieceSize, 
+                    y * worldPieceSize + worldHalfPieceSize);
                 }
-                if ((wrld[y][x] > 0 && wrld[y][x] < 16 && x < 20 || 
+                
+    
+                if ((!(x == 2 && y == 2) && !(x == 46 && y == 2) && 
+                !(x == 2 && y == 30) && !(x == 46 && y == 30) && !(x == 24 && y == 11) &&
+
+                
+                    (wrld[y][x] > 0 && wrld[y][x] < 16 && x < 20 || 
                      wrld[y][x] > 0 && wrld[y][x] < 16 && x > 30 ||
                      wrld[y][x] > 0 && wrld[y][x] < 16 && y < 12 ||
                      wrld[y][x] > 0 && wrld[y][x] < 16 && y > 20) &&
@@ -141,7 +162,7 @@ public class MyWorld extends World {
                      wrld[y][x] > 0 && wrld[y][x] < 16 && y > 16) &&
                     (wrld[y][x] > 0 && wrld[y][x] < 16 && x < 43 ||
                      wrld[y][x] > 0 && wrld[y][x] < 16 && y < 12 ||
-                     wrld[y][x] > 0 && wrld[y][x] < 16 && y > 16)) {
+                     wrld[y][x] > 0 && wrld[y][x] < 16 && y > 16))) {
                     addObject(new Coin(), x * worldPieceSize + worldHalfPieceSize, y * worldPieceSize + worldHalfPieceSize);
                 }
             }
@@ -182,16 +203,23 @@ public class MyWorld extends World {
     }
 
     private void spawnCherryTimer() {
-        cherrySpawnTimer++;
-        if (cherrySpawnTimer >= cherrySpawnCooldown) {
+        if (getObjects(Cherry.class).isEmpty()) {
+            cherrySpawnTimer++;
+        }
+        if (getObjects(Cherry.class).isEmpty() && cherrySpawnTimer >= cherrySpawnCooldown) {
             spawnCherry();
             cherrySpawnTimer = 0;
             cherrySpawnCooldown = Greenfoot.getRandomNumber(1000) + 1000;
         }
     }
-
+    
+        
     private void spawnCherry() {
-        List<Point> preferredLocations = new ArrayList<>();
+        if (!getObjects(Cherry.class).isEmpty()) {
+            return;
+        }
+        
+        List<Integer> preferredLocations = new ArrayList<>();
         for (int y = 0; y < wrld.length; y++) {
             for (int x = 0; x < wrld[y].length; x++) {
                 if (wrld[y][x] > 0 && wrld[y][x] < 16) {
@@ -204,25 +232,21 @@ public class MyWorld extends World {
                         int centerY = y * worldPieceSize + worldHalfPieceSize;
                         boolean hasCoin = !getObjectsAt(centerX, centerY, Coin.class).isEmpty();
                         if (!hasCoin) {
-                            preferredLocations.add(new Point(x, y));
+                            preferredLocations.add(x*100+y);
+                            //x*100+y
                         }
                     }
                 }
             }
         }
         if (!preferredLocations.isEmpty()) {
-            Point chosenLoc = preferredLocations.get(Greenfoot.getRandomNumber(preferredLocations.size()));
-            int spawnX = chosenLoc.x * worldPieceSize + worldHalfPieceSize;
-            int spawnY = chosenLoc.y * worldPieceSize + worldHalfPieceSize;
+            int chosenLoc = preferredLocations.get(Greenfoot.getRandomNumber(preferredLocations.size()));
+            int y= chosenLoc%100;
+            int x = chosenLoc/100;
+            int spawnX = x * worldPieceSize + worldHalfPieceSize;
+            int spawnY = y * worldPieceSize + worldHalfPieceSize;
             addObject(new Cherry(), spawnX, spawnY);
         }
     }
     
-     private static class Point {
-        int x, y;   
-        Point(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
 }
