@@ -44,9 +44,11 @@ public class Yellow_ghost extends Actor
         changeMatrixLocatioLog();
         inCenterOfCell();
         
+        
         if (waitHome(7)) return;
+        speed = 2;
+        if (getX()%2 == 1  || getY()%2==1) speed =1;
         if (goHomeFlag){ 
-            speed = 2;
             GoHomeMod();
             return;
         }
@@ -64,7 +66,6 @@ public class Yellow_ghost extends Actor
             return;
         }
         
-        speed = 2;
         if (MyWorld.CHASE_TIMER != 0){
             ChaseMod(_allowed_dir);
             return;
@@ -210,7 +211,7 @@ public class Yellow_ghost extends Actor
             goHomeFlag = false;
             return;
         }
-        
+        if (getX()%2 == 1  || getY()%2==1) speed =1;
         if (!canChangeDirection){ 
             switch (rotat) {
             case 0:   newX += speed; break;
@@ -251,11 +252,16 @@ public class Yellow_ghost extends Actor
         setLocation(newX, newY);
     }
     
+    
     void somebodyCaptured(){
         if (fearStatusTimer >0){
             MyWorld.scoreValue += 200;
             goHomeFlag = true;
             fearStatusTimer = 0;
+            return;
+        }
+        if (fearStatusTimer == 0){
+            Pacman.wasCaptured = true;
         }
     }
     

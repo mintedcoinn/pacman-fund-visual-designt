@@ -43,13 +43,15 @@ public class Red_ghost extends Actor
         changeMatrixLocatioLog();
         inCenterOfCell();
         
+        speed = 2;
+        if (getX()%2 == 1  || getY()%2==1) speed =1;
+        
         if (goHomeFlag){ 
-            speed = 2;
             GoHomeMod();
             return;
         }
         
-            if (MyWorld.POWER_PILL_COUNT < PREVIOUS_COUNT_OF_PILLS){
+        if (MyWorld.POWER_PILL_COUNT < PREVIOUS_COUNT_OF_PILLS){
             fearStatusTimer += 80* PREVIOUS_COUNT_OF_PILLS;
             PREVIOUS_COUNT_OF_PILLS = MyWorld.POWER_PILL_COUNT;
         }   
@@ -62,7 +64,7 @@ public class Red_ghost extends Actor
             return;
         }
         
-        speed = 2;
+        
         if (MyWorld.CHASE_TIMER != 0){
             ChaseMod();
             return;
@@ -253,6 +255,11 @@ public class Red_ghost extends Actor
             MyWorld.scoreValue += 200;
             goHomeFlag = true;
             fearStatusTimer = 0;
+            
+            return;
+        }
+        if (fearStatusTimer == 0){
+            Pacman.wasCaptured = true;
         }
     }
     
@@ -285,7 +292,7 @@ public class Red_ghost extends Actor
                 int step = curr;
                 while (step != -1) {
                     path.add(step);
-                // System.out.println(step);
+                 //System.out.println(step);
                     step = prev[step % 100][step / 100];
                     
                 }

@@ -41,7 +41,6 @@ public class MyWorld extends World {
     public final static int worldPieceSize = 20;
     public final static int worldHalfPieceSize = worldPieceSize /2;
     public static int POWER_PILL_COUNT = 5;
-    public static boolean currentPillEffect;
     private boolean gamePaused = false;
     public static int CHASE_TIMER = 0;
     private int CHASE_TIMER_CD = 450;

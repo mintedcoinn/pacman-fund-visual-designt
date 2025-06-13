@@ -44,6 +44,8 @@ public class Blue_ghost extends Actor
         changeMatrixLocatioLog();
         inCenterOfCell();
         if (waitHome(5)) return;
+         speed = 2;
+        if (getX()%2 == 1  || getY()%2==1) speed =1;
         if (goHomeFlag){ 
             speed = 2;
             GoHomeMod();
@@ -201,10 +203,12 @@ public class Blue_ghost extends Actor
         int pRot = Pacman.rotat;
         int nMX = pacmanCoords() / 100;
         int nMY = pacmanCoords() % 100;
+        if (nMX >48)  nMX = 48;
+        if (nMX <1) nMX = 2;
         if (pRot >90) pRot -=180;
         else pRot+=180;
         
-        for (int step = 0; step < 4; step++) {
+        for (int step = 0; step < 8; step++) {
             int tX = nMX;
             int tY = nMY;
             
@@ -215,7 +219,7 @@ public class Blue_ghost extends Actor
                 case 270: tY--; break;
             }
             
-            if (map[tY][tX] == 16 || map[tY][tX] < 0) break;
+            if (tX <0 || tX>48 || map[tY][tX] == 16 || map[tY][tX] < 0) break;
             
             nMX = tX;
             nMY = tY;
@@ -233,7 +237,7 @@ public class Blue_ghost extends Actor
             goHomeFlag = false;
             return;
         }
-        
+        if (getX()%2 == 1  || getY()%2==1) speed =1;    
         if (!canChangeDirection){ 
             switch (rotat) {
             case 0:   newX += speed; break;
@@ -274,11 +278,16 @@ public class Blue_ghost extends Actor
         setLocation(newX, newY);
     }
     
+    
     void somebodyCaptured(){
         if (fearStatusTimer >0){
             MyWorld.scoreValue += 200;
             goHomeFlag = true;
             fearStatusTimer = 0;
+            return;
+        }
+        if (fearStatusTimer == 0){
+            Pacman.wasCaptured = true;
         }
     }
     

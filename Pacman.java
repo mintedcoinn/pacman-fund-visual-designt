@@ -51,10 +51,14 @@ public class Pacman extends Actor {
     private int deathAnimationDelay = 10;
     private int deathAnimationCounter = 0;
     private static boolean gameFrozen = false;
+    public static boolean wasCaptured = false;
     public void act() {
         if (isDying) {
             playDeathAnimation();
             return;
+        }
+        if (wasCaptured) {
+            startDeathAnimation();
         }
         if (!gameFrozen) {
             matrixNavigation(getX(), getY());
@@ -65,14 +69,6 @@ public class Pacman extends Actor {
             eatCoin();
             
             handleAnimation(); 
-            checkGhostCollision();
-        }
-        if (pillEffect) {
-            pillEffectCounter--;
-            if (pillEffectCounter <= 0) {
-                pillEffect = false;
-                MyWorld.currentPillEffect = false;
-            }
         }
         
         for (int i = 0; i < 8; i++) {
@@ -81,15 +77,8 @@ public class Pacman extends Actor {
         }
     }
     
-    private void checkGhostCollision() {
-        if (isTouching(Red_ghost.class)) {
-            if (!pillEffect) {
-                startDeathAnimation();
-            }
-        }
-    }
     
-    private void startDeathAnimation() {
+    public void startDeathAnimation() {
         isDying = true;
         gameFrozen = true;
         deathAnimationStep = 0;
@@ -97,7 +86,12 @@ public class Pacman extends Actor {
         setImage(deathFrames[0]);
         Red_ghost redGhost = (Red_ghost)getWorld().getObjects(Red_ghost.class).get(0);
         getWorld().removeObject(redGhost);
-        
+        Pink_ghost pinkGhost = (Pink_ghost)getWorld().getObjects(Pink_ghost.class).get(0);
+        getWorld().removeObject(pinkGhost);
+        Yellow_ghost YellowGhost = (Yellow_ghost)getWorld().getObjects(Yellow_ghost.class).get(0);
+        getWorld().removeObject(YellowGhost);
+        Blue_ghost BlueGhost = (Blue_ghost)getWorld().getObjects(Blue_ghost.class).get(0);
+        getWorld().removeObject(BlueGhost);
     }
     
     private void playDeathAnimation() {
@@ -303,6 +297,7 @@ public class Pacman extends Actor {
         matrixX = current_x / CELL_SIZE;
         matrixY = current_y / CELL_SIZE;
         _allowed_dir = map[matrixY][matrixX];
+        doNotGoHome();
     }
         private void circlenavigation(){
         if (matrixX==0) {
@@ -328,8 +323,7 @@ public class Pacman extends Actor {
         }
     }    
     
-    private int pillEffectCounter = 0;
-    private boolean pillEffect = false;
+    
     private void eatCoin() {
         Coin coin = (Coin) getOneIntersectingObject(Coin.class);
         if (coin != null) {
@@ -347,10 +341,11 @@ public class Pacman extends Actor {
         if (pill != null) {
             getWorld().removeObject(pill);
             MyWorld.POWER_PILL_COUNT -= 1;
-            pillEffect=true;
-            MyWorld.currentPillEffect = this.pillEffect;
-            pillEffectCounter = 600;
         }
     }
-    
+    private void doNotGoHome(){
+        if (matrixX *100 + matrixY == 2411 && where_from_came != 2){
+            _allowed_dir -= 2;
+        }
+    }
 }

@@ -43,8 +43,10 @@ public class Pink_ghost extends Actor
         changeMatrixLocatioLog();
         inCenterOfCell();
         
+        speed = 2;
+        if (getX()%2 == 1  || getY()%2==1) speed =1;
         if (goHomeFlag){ 
-            speed = 2;
+        
             GoHomeMod();
             return;
         }
@@ -62,7 +64,7 @@ public class Pink_ghost extends Actor
             return;
         }
         
-        speed = 2;
+        
         if (MyWorld.CHASE_TIMER != 0){
             ChaseMod();
             return;
@@ -130,6 +132,7 @@ public class Pink_ghost extends Actor
        
         path = pathToTarget(pacmanCoordsPlus4());
         current_path_step = 0;
+        if (path == null) path = pathToTarget(pacmanCoords());
         
         
         if (!canChangeDirection){ 
@@ -163,8 +166,9 @@ public class Pink_ghost extends Actor
         int pRot = Pacman.rotat;
         int nMX = pacmanCoords() / 100;
         int nMY = pacmanCoords() % 100;
-        
-        for (int step = 0; step < 4; step++) {
+        if (nMX <1)  nMX = 48;
+        if (nMX >48) nMX = 2;
+        for (int step = 0; step < 8; step++) {
             int tX = nMX;
             int tY = nMY;
             
@@ -175,7 +179,7 @@ public class Pink_ghost extends Actor
                 case 270: tY--; break;
             }
             
-            if (map[tY][tX] == 16 || map[tY][tX] < 0) break;
+            if (tX <0 || tX>48 || map[tY][tX] == 16 || map[tY][tX] < 0) break;
             
             nMX = tX;
             nMY = tY;
@@ -230,7 +234,7 @@ public class Pink_ghost extends Actor
             goHomeFlag = false;
             return;
         }
-        
+        if (getX()%2 == 1  || getY()%2==1) speed =1;
         if (!canChangeDirection){ 
             switch (rotat) {
             case 0:   newX += speed; break;
@@ -271,11 +275,16 @@ public class Pink_ghost extends Actor
         setLocation(newX, newY);
     }
     
+    
     void somebodyCaptured(){
         if (fearStatusTimer >0){
             MyWorld.scoreValue += 200;
             goHomeFlag = true;
             fearStatusTimer = 0;
+            return;
+        }
+        if (fearStatusTimer == 0){
+            Pacman.wasCaptured = true;
         }
     }
     
