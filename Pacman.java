@@ -7,9 +7,17 @@ import java.util.ArrayList;
 public class Pacman extends Actor {
 
     public Pacman() {
-        GreenfootImage img = new GreenfootImage("pacmeen.png");
-        img.scale(60, 40);
-        setImage(img);
+        animationFrames[0] = new GreenfootImage("pacmeen.png");
+        animationFrames[1] = new GreenfootImage("pacmeen1.png");
+        animationFrames[2] = new GreenfootImage("pacmeen2.png");
+        animationFrames[3] = new GreenfootImage("pacmeen3.png");
+
+        for (GreenfootImage frame : animationFrames) {
+            frame.scale(50, 50);
+        }
+        
+        setImage(animationFrames[0]);
+        
     }
     
     private static int[][] map = MyWorld.wrld;
@@ -32,47 +40,102 @@ public class Pacman extends Actor {
     public static boolean JoinNewCell = false;
     private boolean can = false;
     
-    public void act()
-    {
-        matrixNavigation(getX(),getY());
+    private int animationStep = 0;
+    private int animationDelay = 5; 
+    private int animationCounter = 0;
+    
+    private GreenfootImage[] animationFrames = new GreenfootImage[4]; // 4 кадра анимации
+    
+    public void act() {
+        matrixNavigation(getX(), getY());
         circlenavigation();
         changeMatrixLocatioLog();
         inCenterOfCell();  
-        
         ChangerLocation(_allowed_dir);
         eatCoin();
+        
+        handleAnimation(); 
+        
+        if (pillEffect) {
+            pillEffectCounter--;
+            if (pillEffectCounter <= 0) {
+                pillEffect = false;
+                MyWorld.currentPillEffect = false;
+            }
+        }
     }
     
+    private boolean isRotating = false;
+    private int targetRotation = 0;
+    private int rotationDirection = 1; // 1 - по часовой, -1 - против часовой
+    private boolean rotation;
+    
+    private void wherePacmanLook() {
+        if (rotat != prev_rotat) {
+            int diff = (rotat - prev_rotat + 360) % 360;
+                                    
+            if (diff>180){
+                rotationDirection = -1;
+                rotation=true;
+            } else{
+                rotationDirection = 1;
+                rotation=false;
+            }
+            targetRotation = rotat;
+            startRotationAnimation();
+            prev_rotat = rotat;
+        }
+    }
+
+    private void startRotationAnimation() {
+        animationCounter = 0;
+        isRotating = true;
         
+    
+        if (rotationDirection == 1) {
+            animationStep = 0;
+        } else {
+            animationStep = animationFrames.length - 1;
+        }
+    }
+
+    private void handleAnimation() {
+        if (!isRotating) return;
+    
+        animationCounter++;
+        if (animationCounter >= animationDelay) {
+            animationCounter = 0;
+            animationStep += rotationDirection;
+    
+            if (animationStep >= animationFrames.length || animationStep < 0) {
+                endRotationAnimation();
+                return;
+            }
+    
+            GreenfootImage img = new GreenfootImage(animationFrames[animationStep]);
+            if (rotation) img.rotate(targetRotation);
+            if (!rotation) img.rotate(targetRotation-90);
+            setImage(img);
+        }
+    }
+
+    private void endRotationAnimation() {
+        isRotating = false;
+        GreenfootImage img = new GreenfootImage(animationFrames[0]);
+        img.rotate(targetRotation);
+        setImage(img);
+    }    
+    
+    private int[] dirs = {1, 2, 4, 8};
     void ChangerLocation( int allowed_dirs){ 
         int newX = getX();
         int newY = getY();
         //allowed_dirs -= where_from_came;      
-        
-        
-        //if there is a fork ghost will choose direction with his actual pattern
-         //chaotic pattern. ghost will go to random direction
-            List<Integer> random_allowed_dir = new ArrayList<>();
-            switch (allowed_dirs){    
-            case 15:random_allowed_dir = Arrays.asList(0, 90, 180, 270);break;
-            case 14:random_allowed_dir = Arrays.asList(90, 180, 270);break;
-            case 13:random_allowed_dir = Arrays.asList(0, 180, 270);break;
-            case 12:random_allowed_dir = Arrays.asList(180, 270);break;
-            case 11:random_allowed_dir = Arrays.asList(0, 90, 270);break;
-            case 10:random_allowed_dir = Arrays.asList(90, 270);break;
-            case 9:random_allowed_dir = Arrays.asList(0, 270);break;
-            case 8:random_allowed_dir = Arrays.asList(270);break;
-            case 7:random_allowed_dir = Arrays.asList(0, 90, 180);break;
-            case 6:random_allowed_dir = Arrays.asList(90, 180);break;
-            case 5:random_allowed_dir = Arrays.asList(0, 180);break;
-            case 4:random_allowed_dir = Arrays.asList( 180);break;
-            case 3:random_allowed_dir = Arrays.asList(0, 90);break;
-            case 2:random_allowed_dir = Arrays.asList(90);break;
-            case 1:random_allowed_dir = Arrays.asList(0);break;
-            default:
-                speed =0;
-                return;
-            }
+
+        List<Integer> _allowed_direction = new ArrayList<>();
+        for (int i = 0; i<4; i++){
+                if ((allowed_dirs & dirs[i]) != 0)_allowed_direction.add(i*90);
+        }
             
         if (Greenfoot.isKeyDown("right") ) {
             dir = 0;
@@ -84,17 +147,15 @@ public class Pacman extends Actor {
             dir = 270; 
         }
         
-        if (random_allowed_dir.contains(dir) ){
+        if (_allowed_direction.contains(dir) ){
             can = true; 
             if(canChangeDirection == true){
             rotat = dir;   
             }
         } else{
             can=false;
-        }// нажатая клавиша не принадл массиву- останови
-        // остановка не от else от принадл к массив а от
-        //сделай проверку на следующую по направлению клетку если 16 то дойди до центра и останови 
-        //сделай цикл x y
+        }
+        
         //for (int y = 0; y < map.length; y++) {
             //for (int x = 0; x < map[y].length; x++) {
         //if(getX() == x*CELL_SIZE+CELL_HALF){
@@ -112,7 +173,7 @@ public class Pacman extends Actor {
                     } else if (Greenfoot.isKeyDown("up") ) {
                         dir = 270; 
                     }
-                    if (random_allowed_dir.contains(dir) ){
+                    if (_allowed_direction.contains(dir) ){
                         can = true;
                         speed=4;
                         rotat=90;
@@ -131,7 +192,7 @@ public class Pacman extends Actor {
             case 180: newX -= speed; break;
             case 270: newY -= speed; break;
         }
-        
+        wherePacmanLook();
         setLocation(newX, newY);
         
     }
@@ -140,9 +201,7 @@ public class Pacman extends Actor {
         int tileSize = 20;
         int gridX = pixelX / tileSize;
         int gridY = pixelY / tileSize;
-    
-        // Проверка на границы карты
-        if (gridY >= 0 && gridY < map.length && gridX >= 0 && gridX < map[0].length) {
+
             if(dir==0){
                 return map[gridY][gridX+1];
             }
@@ -155,12 +214,11 @@ public class Pacman extends Actor {
             if(dir==270){
                 return map[gridY-1][gridX];
             }         
-        }
-    
-        return 16; // Возвращаем тупик по умолчанию
+           
+        return 16; 
     }
     
-    private void changeMatrixLocatioLog(){//check when ghost join on new cell of matrix
+    private void changeMatrixLocatioLog(){
         if( matrixX != prevMX || matrixY != prevMY){
             if (matrixX < prevMX) where_from_came = 1;
             if (matrixX > prevMX) where_from_came = 4;
@@ -172,7 +230,7 @@ public class Pacman extends Actor {
         }
     }
     
-    private void inCenterOfCell(){ //if ghost in center of cell it can change direction 
+    private void inCenterOfCell(){
         if (JoinNewCell){
             if (getX() == matrixX*CELL_SIZE+CELL_HALF && getY() == matrixY*CELL_SIZE+CELL_HALF) 
             canChangeDirection = true;
@@ -208,19 +266,29 @@ public class Pacman extends Actor {
         }
     }    
     
+    private int pillEffectCounter = 0;
+    private boolean pillEffect = false;
     private void eatCoin() {
-    Coin coin = (Coin) getOneIntersectingObject(Coin.class);
-    if (coin != null) {
-        getWorld().removeObject(coin);
-        ((MyWorld)getWorld()).addScore(10); // вызываем метод addScore у MyWorld
+        Coin coin = (Coin) getOneIntersectingObject(Coin.class);
+        if (coin != null) {
+            getWorld().removeObject(coin);
+            ((MyWorld)getWorld()).addScore(10); 
+        }
+    
+        Cherry cherry = (Cherry) getOneIntersectingObject(Cherry.class);
+        if (cherry != null) {
+            getWorld().removeObject(cherry);
+            ((MyWorld)getWorld()).addScore(50);
+        }
+        
+        Pill pill = (Pill) getOneIntersectingObject(Pill.class);
+        if (pill != null) {
+            getWorld().removeObject(pill);
+            MyWorld.POWER_PILL_COUNT -= MyWorld.POWER_PILL_COUNT;
+            pillEffect=true;
+            MyWorld.currentPillEffect = this.pillEffect;
+            pillEffectCounter = 600;
+        }
     }
-
-    Cherry cherry = (Cherry) getOneIntersectingObject(Cherry.class);
-    if (cherry != null) {
-        getWorld().removeObject(cherry);
-        ((MyWorld)getWorld()).addScore(50);
-    }
-}
-
     
 }
