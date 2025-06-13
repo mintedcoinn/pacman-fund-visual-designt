@@ -284,7 +284,7 @@ public class Pacman extends Actor {
         Pill pill = (Pill) getOneIntersectingObject(Pill.class);
         if (pill != null) {
             getWorld().removeObject(pill);
-            MyWorld.POWER_PILL_COUNT -= MyWorld.POWER_PILL_COUNT;
+            MyWorld.POWER_PILL_COUNT -= 1;
             pillEffect=true;
             MyWorld.currentPillEffect = this.pillEffect;
             pillEffectCounter = 600;

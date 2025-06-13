@@ -20,7 +20,7 @@ public class Red_ghost extends Actor
     
     private int fearStatusTimer = 0;
     private boolean goHomeFlag = false;
-    private int speed = 1;
+    private int speed = 2;
     
     private int[] dirs = {1, 2, 4, 8};
     public int matrixX = 24;
@@ -44,24 +44,28 @@ public class Red_ghost extends Actor
         inCenterOfCell();
         
         if (goHomeFlag){ 
+            speed = 2;
             GoHomeMod();
             return;
         }
         
-        if (MyWorld.POWER_PILL_COUNT < PREVIOUS_COUNT_OF_PILLS){
-            fearStatusTimer += 70* PREVIOUS_COUNT_OF_PILLS;
+            if (MyWorld.POWER_PILL_COUNT < PREVIOUS_COUNT_OF_PILLS){
+            fearStatusTimer += 80* PREVIOUS_COUNT_OF_PILLS;
             PREVIOUS_COUNT_OF_PILLS = MyWorld.POWER_PILL_COUNT;
         }   
         
         if (fearStatusTimer >0 ){
+            speed = 1;
             fearStatusTimer -= 1;
             setImage("FGhost.png");
             FearMod(_allowed_dir);
             return;
         }
         
+        speed = 2;
         if (MyWorld.CHASE_TIMER != 0){
             ChaseMod();
+            return;
         }
         
         ScatterMod(_allowed_dir);
@@ -134,6 +138,9 @@ public class Red_ghost extends Actor
             case 180: newX -= speed; break;
             case 270: newY -= speed; break;
         }
+        whereGhostLook();
+        canChangeDirection = false;
+        setLocation(newX, newY);
         return;
         }
         
@@ -278,7 +285,9 @@ public class Red_ghost extends Actor
                 int step = curr;
                 while (step != -1) {
                     path.add(step);
+                // System.out.println(step);
                     step = prev[step % 100][step / 100];
+                    
                 }
                 Collections.reverse(path);
                 return path; //methode return list of directions to get target

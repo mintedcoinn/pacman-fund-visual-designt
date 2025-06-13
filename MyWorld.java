@@ -45,15 +45,6 @@ public class MyWorld extends World {
     private boolean gamePaused = false;
     public static int CHASE_TIMER = 0;
     private int CHASE_TIMER_CD = 450;
-    
-    public static boolean redInWorld = false;
-    private int redCoolDown = 0;
-    public static boolean yellowInWorld = false;
-    private int yellowCoolDown = 0;
-    public static boolean blueInWorld = false;
-    private int blueCoolDown = 0;
-    public static boolean pinkInWorld = false;
-    private int pinkCoolDown = 0;
 
     public static int scoreValue = 0;
     private Label scoreLabel;
@@ -91,12 +82,6 @@ public class MyWorld extends World {
     public void act() {
         if (Greenfoot.isKeyDown("escape")) {
             pauseGame();
-        }
-        if (!redInWorld) {
-            redCoolDown += 100;
-        }
-        if (!redInWorld && redCoolDown > 0) {
-            spawnRed();
         }
         if (CHASE_TIMER_CD == 0){
             CHASE_TIMER = 450;
@@ -171,26 +156,21 @@ public class MyWorld extends World {
 
     public void spawnRed() {
         addObject(new Red_ghost(), 24 * worldPieceSize + worldHalfPieceSize, 13 * worldPieceSize + worldHalfPieceSize);
-        redInWorld = true;
-        redCoolDown = 0;
     }
 
     public void spawnBlue() {
         addObject(new Blue_ghost(), 21 * worldPieceSize + worldHalfPieceSize, 17 * worldPieceSize + worldHalfPieceSize);
-        blueInWorld = true;
-        blueCoolDown = 0;
+        
     }
 
     public void spawnYellow() {
         addObject(new Yellow_ghost(), 27 * worldPieceSize + worldHalfPieceSize, 17 * worldPieceSize + worldHalfPieceSize);
-        yellowInWorld = true;
-        yellowCoolDown = 0;
+        
     }
 
     public void spawnPink() {
         addObject(new Pink_ghost(), 24 * worldPieceSize + worldHalfPieceSize, 17 * worldPieceSize + worldHalfPieceSize);
-        pinkInWorld = true;
-        pinkCoolDown = 0;
+       
     }
 
     public void spawnPacman() {

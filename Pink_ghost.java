@@ -44,6 +44,7 @@ public class Pink_ghost extends Actor
         inCenterOfCell();
         
         if (goHomeFlag){ 
+            speed = 2;
             GoHomeMod();
             return;
         }
@@ -54,15 +55,17 @@ public class Pink_ghost extends Actor
         }   
         
         if (fearStatusTimer >0 ){
+            speed = 1;
             fearStatusTimer -= 1;
             setImage("FGhost.png");
             FearMod(_allowed_dir);
             return;
         }
         
+        speed = 2;
         if (MyWorld.CHASE_TIMER != 0){
             ChaseMod();
-
+            return;
         }
         
         ScatterMod(_allowed_dir);
@@ -128,6 +131,7 @@ public class Pink_ghost extends Actor
         path = pathToTarget(pacmanCoordsPlus4());
         current_path_step = 0;
         
+        
         if (!canChangeDirection){ 
             switch (rotat) {
             case 0:   newX += speed; break;
@@ -135,8 +139,10 @@ public class Pink_ghost extends Actor
             case 180: newX -= speed; break;
             case 270: newY -= speed; break;
         }
-        return;
-        }
+        whereGhostLook();
+        canChangeDirection = false;
+        setLocation(newX, newY);
+        return;}
         
         if (matrixX < path.get(current_path_step+1)/100) rotat = 0;
         if (matrixX > path.get(current_path_step+1)/100) rotat = 180;

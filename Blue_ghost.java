@@ -45,6 +45,7 @@ public class Blue_ghost extends Actor
         inCenterOfCell();
         if (waitHome(5)) return;
         if (goHomeFlag){ 
+            speed = 2;
             GoHomeMod();
             return;
         }
@@ -55,14 +56,17 @@ public class Blue_ghost extends Actor
         }   
         
         if (fearStatusTimer >0 ){
+            speed = 1;
             fearStatusTimer -= 1;
             setImage("FGhost.png");
             FearMod(_allowed_dir);
             return;
         }
         
+        speed = 2;
         if (MyWorld.CHASE_TIMER != 0){
             ChaseMod();
+            return;
         }
         
         ScatterMod(_allowed_dir);
@@ -128,6 +132,7 @@ public class Blue_ghost extends Actor
         path = pathToTarget(pacmanCoords());
         current_path_step = 0;
         
+        
         if (!canChangeDirection){ 
             switch (rotat) {
             case 0:   newX += speed; break;
@@ -135,8 +140,10 @@ public class Blue_ghost extends Actor
             case 180: newX -= speed; break;
             case 270: newY -= speed; break;
         }
-        return;
-        }
+        whereGhostLook();
+        canChangeDirection = false;
+        setLocation(newX, newY);
+        return;}
         
         if (matrixX < path.get(current_path_step+1)/100) rotat = 0;
         if (matrixX > path.get(current_path_step+1)/100) rotat = 180;
@@ -428,6 +435,7 @@ public class Blue_ghost extends Actor
         if (getX() == 24*CELL_SIZE+CELL_HALF){
             waitHomeCount+=1;
             where_from_came = 2;
+            setLocation(24*CELL_SIZE+CELL_HALF, 17*CELL_SIZE+CELL_HALF);
             return false;
         }
         return true;

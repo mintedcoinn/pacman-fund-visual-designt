@@ -46,6 +46,7 @@ public class Yellow_ghost extends Actor
         
         if (waitHome(7)) return;
         if (goHomeFlag){ 
+            speed = 2;
             GoHomeMod();
             return;
         }
@@ -56,14 +57,17 @@ public class Yellow_ghost extends Actor
         }   
         
         if (fearStatusTimer >0 ){
+            speed = 1;
             fearStatusTimer -= 1;
             setImage("FGhost.png");
             FearMod(_allowed_dir);
             return;
         }
         
+        speed = 2;
         if (MyWorld.CHASE_TIMER != 0){
             ChaseMod(_allowed_dir);
+            return;
         }
         
         ScatterMod(_allowed_dir);
@@ -134,10 +138,10 @@ public class Yellow_ghost extends Actor
             case 180: newX -= speed; break;
             case 270: newY -= speed; break;
         }
-    
+        whereGhostLook();
+        canChangeDirection = false;
         setLocation(newX, newY);
-        return;
-        }
+        return;}
         
         List<Integer> _allowed_direction = new ArrayList<>();
         for (int i = 0; i<4; i++){
@@ -152,8 +156,7 @@ public class Yellow_ghost extends Actor
             case 90:  newY += speed; break;
             case 180: newX -= speed; break;
             case 270: newY -= speed; break;
-        }
-        
+        }      
 
         whereGhostLook();
         canChangeDirection = false;
@@ -409,6 +412,7 @@ public class Yellow_ghost extends Actor
         if (getX() == 24*CELL_SIZE+CELL_HALF){
             waitHomeCount+=1;
             where_from_came = 2;
+            setLocation(24*CELL_SIZE+CELL_HALF, 17*CELL_SIZE+CELL_HALF);
             return false;
         }
         return true;
