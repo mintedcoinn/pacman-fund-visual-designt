@@ -45,17 +45,28 @@ public class Pacman extends Actor {
     private int animationCounter = 0;
     
     private GreenfootImage[] animationFrames = new GreenfootImage[4]; // 4 кадра анимации
-    
+    private GreenfootImage[] deathFrames = new GreenfootImage[8];
+    public static boolean isDying = false;
+    private int deathAnimationStep = 0;
+    private int deathAnimationDelay = 10;
+    private int deathAnimationCounter = 0;
+    private static boolean gameFrozen = false;
     public void act() {
-        matrixNavigation(getX(), getY());
-        circlenavigation();
-        changeMatrixLocatioLog();
-        inCenterOfCell();  
-        ChangerLocation(_allowed_dir);
-        eatCoin();
-        
-        handleAnimation(); 
-        
+        if (isDying) {
+            playDeathAnimation();
+            return;
+        }
+        if (!gameFrozen) {
+            matrixNavigation(getX(), getY());
+            circlenavigation();
+            changeMatrixLocatioLog();
+            inCenterOfCell();  
+            ChangerLocation(_allowed_dir);
+            eatCoin();
+            
+            handleAnimation(); 
+            checkGhostCollision();
+        }
         if (pillEffect) {
             pillEffectCounter--;
             if (pillEffectCounter <= 0) {
@@ -63,6 +74,55 @@ public class Pacman extends Actor {
                 MyWorld.currentPillEffect = false;
             }
         }
+        
+        for (int i = 0; i < 8; i++) {
+            deathFrames[i] = new GreenfootImage("dead" + (i+1) + ".png");
+            deathFrames[i].scale(50, 50);
+        }
+    }
+    
+    private void checkGhostCollision() {
+        if (isTouching(Red_ghost.class)) {
+            if (!pillEffect) {
+                startDeathAnimation();
+            }
+        }
+    }
+    
+    private void startDeathAnimation() {
+        isDying = true;
+        gameFrozen = true;
+        deathAnimationStep = 0;
+        deathAnimationCounter = 0;
+        setImage(deathFrames[0]);
+        Red_ghost redGhost = (Red_ghost)getWorld().getObjects(Red_ghost.class).get(0);
+        getWorld().removeObject(redGhost);
+        
+    }
+    
+    private void playDeathAnimation() {
+        deathAnimationCounter++;
+        if (deathAnimationCounter >= deathAnimationDelay) {
+            deathAnimationCounter = 0;
+            deathAnimationStep++;
+            
+            if (deathAnimationStep < deathFrames.length) {
+                setImage(deathFrames[deathAnimationStep]);
+            } else {
+                endDeathAnimation();
+            }
+        }
+    }
+    
+    private void endDeathAnimation() {
+        isDying = false;
+        gameFrozen = false;
+        getWorld().showText("GAME OVER", getWorld().getWidth()/2, getWorld().getHeight()/2);
+        Greenfoot.stop();
+    }
+    
+    public static boolean isGameFrozen() {
+        return gameFrozen;
     }
     
     private boolean isRotating = false;
@@ -86,6 +146,8 @@ public class Pacman extends Actor {
             prev_rotat = rotat;
         }
     }
+    
+    
 
     private void startRotationAnimation() {
         animationCounter = 0;
