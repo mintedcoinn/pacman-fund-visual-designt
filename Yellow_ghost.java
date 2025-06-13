@@ -54,7 +54,7 @@ public class Yellow_ghost extends Actor
         }
         
         if (MyWorld.POWER_PILL_COUNT < PREVIOUS_COUNT_OF_PILLS){
-            fearStatusTimer += 70* PREVIOUS_COUNT_OF_PILLS;
+            fearStatusTimer += 80* PREVIOUS_COUNT_OF_PILLS;
             PREVIOUS_COUNT_OF_PILLS = MyWorld.POWER_PILL_COUNT;
         }   
         

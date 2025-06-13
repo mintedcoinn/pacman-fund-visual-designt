@@ -61,8 +61,6 @@ public class MyWorld extends World {
 
         scoreLabel = new Label("Score: ", 25, scoreValue);
         addObject(scoreLabel, 70, 680);
-        Portal a = new Portal();
-        addObject(a, 35, 310);
 
         GreenfootImage Image = new GreenfootImage("door.png");
         Image.scale(60, 10);  
