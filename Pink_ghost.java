@@ -133,7 +133,7 @@ public class Pink_ghost extends Actor
         path = pathToTarget(pacmanCoordsPlus4());
         current_path_step = 0;
         if (path == null) path = pathToTarget(pacmanCoords());
-        
+        if (path == null) somebodyCaptured();
         
         if (!canChangeDirection){ 
             switch (rotat) {

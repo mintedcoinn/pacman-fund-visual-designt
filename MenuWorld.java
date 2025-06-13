@@ -15,6 +15,12 @@ public class MenuWorld extends World {
         MenuButton mainMenuButton = new MenuButton("Начать игру");
         addObject(mainMenuButton, 490, 280);
         
+        Actor imageActor = new Actor() {};
+        GreenfootImage Image = new GreenfootImage("instructions.png");
+        Image.scale(330, 280);  
+        imageActor.setImage(Image);
+        addObject(imageActor, 820, 150);
+        
     }
 
     public void startGame() {

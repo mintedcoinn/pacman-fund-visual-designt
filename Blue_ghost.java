@@ -133,7 +133,7 @@ public class Blue_ghost extends Actor
        
         path = pathToTarget(pacmanCoords());
         current_path_step = 0;
-        
+        if (path == null) somebodyCaptured();
         
         if (!canChangeDirection){ 
             switch (rotat) {

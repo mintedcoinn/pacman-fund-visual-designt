@@ -132,7 +132,7 @@ public class Red_ghost extends Actor
        
         path = pathToTarget(pacmanCoords());
         current_path_step = 0;
-        
+        if (path == null) somebodyCaptured();
         if (!canChangeDirection){ 
             switch (rotat) {
             case 0:   newX += speed; break;
