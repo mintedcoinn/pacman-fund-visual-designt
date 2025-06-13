@@ -1,12 +1,6 @@
-------------------------------------------------------------------------
-This is the project README file. Here, you should describe your project.
-Tell the reader (someone who does not know anything about this project)
-all they need to know. The comments should usually include at least:
-------------------------------------------------------------------------
-
-PROJECT TITLE:
-PURPOSE OF PROJECT:
-VERSION or DATE:
-HOW TO START THIS PROJECT:
-AUTHORS:
-USER INSTRUCTIONS:
+PROJECT TITLE: Final project for fundamental visual design "Pacman"
+PURPOSE OF PROJECT: university students project
+VERSION or DATE: v1.1
+HOW TO START THIS PROJECT: download Greenfoot and run project.greenfoot / open direction in Greenfoot
+AUTHORS: Ilya "mintedcoinn" Panov, Michael "papaChill" Troyanov, Andrey "Felddo" Gnatenko
+USER INSTRUCTIONS: take all coin from ghosts maze!
